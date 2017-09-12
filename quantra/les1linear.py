@@ -1,0 +1,28 @@
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn import linear_model,datasets
+
+# use one feature
+diabetes=datasets.load_diabetes()
+
+# use only one feature
+diabetes_X=diabetes.data[:,np.newaxis,2]
+
+# split the data into training/testing sets
+diabetes_X_train=diabetes_X[:-20]
+diabetes_X_test=diabetes_X[-20:]
+
+# split the target 
+diabetes_Y_train=diabetes.target[:-20]
+diabetes_Y_test=diabetes.target[-20:]
+
+
+# create linear regression
+regr=linear_model.LinearRegression()
+
+
+regr.fit(diabetes_X_train,diabetes_Y_train)
+
+#print 'Coefficients:',regr.coef_
+#print 'Mean squared error: %.2f'%np.mean()
+
