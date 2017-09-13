@@ -1,4 +1,4 @@
-import numpy
+import numpy as np
 from keras.datasets import imdb
 from keras.models import Sequential
 from keras.layers import Dense
@@ -7,7 +7,7 @@ from keras.layers.embeddings import Embedding
 from keras.preprocessing import sequence
 from keras.optimizers import Adam
 # fix random seed for reproducibility
-numpy.random.seed(7)
+np.random.seed(7)
 # load the dataset but only keep the top n words, zero the rest
 top_words = 5000 # max word only 5000 words in this dictionary
 (X_train, y_train), (X_test, y_test) = imdb.load_data(nb_words=top_words)
