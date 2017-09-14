@@ -11,7 +11,6 @@ import matplotlib.pyplot as plt
 
 # setting
 batch_size = 128
-N_class = 10
 nb_epoch = 3
 name_saved_model = 'CNN+LSTM_on_MNIST.h5'
 # model
@@ -23,9 +22,11 @@ def model(x_train):
     model.add(MaxPooling2D(pool_size=(2,2)))
     model.add(Dropout(0.2))
     model.add(Flatten())
-    model.add(Dense(128,activation='relu'))
     model.add(Dropout(0.25))
-    model.add(Dense(N_class, activation='softmax'))
+    model.add(Dense(128,activation='relu'))
+    model.add(Embedding()) ### dont forget to put on this
+    model.add(LSTM(20))
+    model.add(Dense(1, activation='relu'))
     model.compile(loss='binary_crossentropy', optimizer=Adam(lr=0.00025), metrics=['accuracy'])
     print model.summary()
     return model
