@@ -20,7 +20,7 @@ model = Sequential()
 model.add(Embedding(top_words, embedding_vecor_length, input_length=max_review_length))
 model.add(LSTM(100))
 model.add(Dense(1, activation='sigmoid'))
-model.compile(loss='binary_crossentropy', optimizer=Adam(lr=0.00025), metrics=['accuracy'])
+model.compile(loss='binary_crossentropy', optimizer=Adam(lr=0.001), metrics=['accuracy'])
 print model.summary()
 ### test
 print y_train.shape
