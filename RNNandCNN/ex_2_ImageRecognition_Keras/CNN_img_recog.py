@@ -25,8 +25,6 @@ def model(x_train):
     model.add(Dropout(0.25))
     model.add(Flatten())
     model.add(Dense(128,activation='relu'))
-    #model.add(Embedding(100, 128))
-    #model.add(LSTM(128, dropout_W=0.2, dropout_U=0.2))
     model.add(Dropout(0.5))
     model.add(Dense(10, activation='softmax'))
     model.compile(loss='binary_crossentropy', optimizer=Adam(lr=0.001), metrics=['accuracy'])
