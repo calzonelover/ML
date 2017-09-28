@@ -59,7 +59,7 @@ class DQNAgent:
     def save_model(self):
         model.save(self.model_backup)
     def load_model(self):
-        return load_model(self.model_backup)
+        return self.model_backup
 if __name__ == "__main__":
     env = gym.make('CartPole-v1')
     #env = wrappers.Monitor(env, os.getcwd()+'/record')
