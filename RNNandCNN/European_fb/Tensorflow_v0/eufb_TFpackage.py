@@ -21,8 +21,8 @@ from tensorflow.python.ops import rnn, rnn_cell
 # Data preparation 
 # ==================
 # data setting
-#dat_dir = '/Users/Macintosth/Desktop/FreeTimeProject/Problem/European_football_2008-2016/'
-dat_dir = '/root/Problems/Eufb_2008_2016/'
+dat_dir = '/Users/Macintosth/Desktop/FreeTimeProject/Problem/European_football_2008-2016/'
+#dat_dir = '/root/Problems/Eufb_2008_2016/'
 dat_f_name = 'database.sqlite'
 f_dat = dat_dir+dat_f_name
 f_match_factors = 'match_factors.olo'
@@ -535,7 +535,7 @@ def train_nn_model_wld(x_train, y_train, x_test, y_test):
     cost = tf.reduce_mean(loss)
     optimizer = tf.train.AdamOptimizer().minimize(cost) #learning_rate = 0.001
     # setting
-    batch_size = 20
+    batch_size = 200
     epochs = 3
     # deploy!!
     with tf.Session() as sess:
@@ -548,6 +548,7 @@ def train_nn_model_wld(x_train, y_train, x_test, y_test):
                     , y_train[mini_batch*n_mini_batch:mini_batch*n_mini_batch+n_mini_batch]
                 _, c = sess.run([optimizer, cost], feed_dict={x: epoch_x, y: epoch_y})
                 epoch_loss += c
+                print epoch_loss, c
             print('Epoch',epoch+1,'/',epochs,'loss:',epoch_loss)
         # evaluation process
         correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
