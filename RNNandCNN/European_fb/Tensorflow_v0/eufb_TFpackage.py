@@ -547,7 +547,7 @@ def train_nn_model_wld(x_train, y_train, x_test, y_test):
                 epoch_x, epoch_y = x_train[mini_batch*n_mini_batch:mini_batch*n_mini_batch+n_mini_batch]\
                     , y_train[mini_batch*n_mini_batch:mini_batch*n_mini_batch+n_mini_batch]
                 _, c = sess.run([optimizer, cost], feed_dict={x: epoch_x, y: epoch_y})
-                epoch_loss += c
+                epoch_loss += c # c is in mini_batch
             print('Epoch',epoch+1,'/',epochs,'loss:',epoch_loss)
         # evaluation process
         correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))

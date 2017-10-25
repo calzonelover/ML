@@ -39,12 +39,15 @@ def get_xy_dat_score(f_dat):
     con = lite.connect(f_dat)
     with lite.connect(f_dat):
         matches = pd.read_sql_query('SELECT * from Match', con)
+    print matches
+    exit()
     # split intp x,y dat
     x_time = np.array(matches['date'])
     x_quan = np.array(matches[factor_quantity_name[0:len(factor_quantity_name)]])
     x_qual = np.array(matches[factor_quality_name[0:len(factor_quality_name)]])
     # define y value
     y = np.array(matches[factor_result[0:len(factor_result)]])
+    exit()
     # define dummy and put value after
     x_dummy = np.random.rand(y.shape[0], date_split_n + x_quan.shape[0] + x_qual.shape[0])
     for i in range(x_dummy.shape[0]):
