@@ -2,7 +2,6 @@ import sqlite3 as lite
 import pandas as pd
 import numpy as np
 from datetime import datetime
-import time
 
 import tensorflow as tf
 from tensorflow.python.ops import rnn, rnn_cell
@@ -41,13 +40,7 @@ def get_xy_dat_score(f_dat):
     with lite.connect(f_dat):
         matches = pd.read_sql_query('SELECT * from Match', con)
     # split intp x,y dat
-    date = ['date']
-    date.insert(factor_result)
-    print date
-    exit()
-    x = np.array(matches[date[0:1]+factor_quantity_name[0:len(factor_quantity_name)]\
-            +factor_quality_name[0:len(factor_quality_name)]])
-
+    x_time = np.array(matches['date'])
     x_quan = np.array(matches[factor_quantity_name[0:len(factor_quantity_name)]])
     x_qual = np.array(matches[factor_quality_name[0:len(factor_quality_name)]])
     # define y value
@@ -60,17 +53,17 @@ def get_xy_dat_score(f_dat):
         # insert date
         date_split_i = date_split(x_time[i])
         for j in range(date_split_n):
-            x[i][j] = date_split_i[j]
+            x_dummy[i][j] = date_split_i[j]
         # insert quantity value
         for j in range(date_split_n,date_split_n+ len(factor_quantity_name)):
-            x[i][j] = x_quan[i][j - date_split_n ]
+            x_dummy[i][j] = x_quan[i][j - date_split_n ]
         # insert quality value
         for j in range(date_split_n + len(factor_quantity_name), date_split_n + len(factor_quantity_name) + len(factor_quality_name)):
-            x[i][j] = x_qual[i][j - (date_split_n + factor_quantity_name.shape[0])]
+            x_dummy[i][j] = x_qual[i][j - (date_split_n + len(factor_quantity_name))]
         # fix defect column
         for j in range(x_dummy.shape[1]):
-            if (type(x[i][j]) != int and type(x[i][j]) != float) or x[i][j] != x[i][j]:
-                x[i][j] = biased_value
+            if (type(x_dummy[i][j]) != int and type(x_dummy[i][j]) != float) or x_dummy[i][j] != x_dummy[i][j]:
+                x_dummy[i][j] = biased_value
     return x_dummy, y
 
 def season_to_number(year_season): # Ex (2008/2009 -> 8)
@@ -85,6 +78,10 @@ def date_split(date_want):# with pattern '2008-08-17 00:00:00' to hr/weekday/dat
     weekday_want = datetime(int(year_want), int(month_want), int(dates_want),\
         int(hr_want),int(min_want),int(sec_want)).weekday()
     return np.array([hr_want, weekday_want, dates_want, month_want, year_want])
+
+# ===============
+#     Model
+# ===============
 
 print 'start'
 x, y = get_xy_dat_score(f_dat)
