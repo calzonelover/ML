@@ -8,8 +8,7 @@ input_length = x_train.shape[1]
 output_length = y_train.shape[1]
 
 print x_train.shape,y_train.shape
-print x_train[19234]
-exit()
+#print x_train[19234],y_train[19234]
 #x = tf.placeholder('float',[None, input_length])
 #y = tf.placeholder('float', [None, output_length])
 #x_train = np.reshape(x_train, [x_train.shape[0],input_length,1])### for lstm

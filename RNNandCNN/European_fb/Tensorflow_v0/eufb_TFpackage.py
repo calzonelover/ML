@@ -21,7 +21,8 @@ from tensorflow.python.ops import rnn, rnn_cell
 # Data preparation 
 # ==================
 # data setting
-dat_dir = '/Users/Macintosth/Desktop/FreeTimeProject/Problem/European_football_2008-2016/'
+#dat_dir = '/Users/Macintosth/Desktop/FreeTimeProject/Problem/European_football_2008-2016/'
+dat_dir = '/root/Problems/Eufb_2008_2016/'
 dat_f_name = 'database.sqlite'
 f_dat = dat_dir+dat_f_name
 f_match_factors = 'match_factors.olo'

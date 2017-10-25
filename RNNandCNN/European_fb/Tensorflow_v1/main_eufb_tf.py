@@ -8,7 +8,7 @@ input_length = x_train.shape[1]
 output_length = y_train.shape[1]
 
 print x_train.shape,y_train.shape
-print x_train[19234]
+print x_train[19234],y_train[19234]
 exit()
 #x = tf.placeholder('float',[None, input_length])
 #y = tf.placeholder('float', [None, output_length])
