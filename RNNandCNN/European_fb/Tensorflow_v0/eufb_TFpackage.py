@@ -10,7 +10,7 @@ from keras.layers import LSTM
 from keras.layers.embeddings import Embedding
 from keras.preprocessing import sequence
 from keras.optimizers import Adam
-from keras.utils import plot_model
+#from keras.utils import plot_model
 from keras.layers import Input, Dense
 from keras.models import Model
 
