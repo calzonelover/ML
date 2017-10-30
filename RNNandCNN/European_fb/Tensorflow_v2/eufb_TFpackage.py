@@ -205,7 +205,7 @@ def train_nn_model_wld(x_train, y_train, x_test, y_test):
     optimizer = tf.train.AdamOptimizer().minimize(cost) #learning_rate = 0.001
     # setting
     batch_size = 200
-    epochs = 20
+    epochs = 3
     # deploy!!
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
@@ -231,7 +231,7 @@ def train_nn_model_score(x_train, y_train, x_test, y_test):
     optimizer = tf.train.AdamOptimizer().minimize(cost)
     # setting
     batch_size = 200
-    epochs = 200
+    epochs = 3
     # deploy!!
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())

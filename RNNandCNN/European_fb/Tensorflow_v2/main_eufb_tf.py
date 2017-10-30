@@ -8,6 +8,7 @@ input_length = x_train.shape[1]
 output_length = y_train.shape[1]
 
 print(x_train.shape,y_train.shape)
+print(y_train[14204])
 #exit()
 #x = tf.placeholder('float',[None, input_length])
 #y = tf.placeholder('float', [None, output_length])
@@ -16,22 +17,6 @@ print(x_train.shape,y_train.shape)
 
 train_nn_model_wld(x_train, y_train, x_test, y_test)
 #train_nn_model_score(x_train, y_train, x_test, y_test)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
