@@ -60,7 +60,7 @@ def get_xy_dat_score(f_dat):
         for j in range(date_split_n,date_split_n+ len(factor_quantity_name)):
             x_dummy_quan[i][j] = x_quan[i][j - date_split_n ]
             # fix defect column
-            if x_quan[i][j - date_split_n ] != x_quan[i][j - date_split_n ]:
+            if math.isnan(x_quan[i][j - date_split_n ]) or (x_quan[i][j - date_split_n ] != x_quan[i][j - date_split_n ]):
                 x_dummy_quan[i][j] = biased_value
         # insert quality value
         for j in range(len(factor_quality_name)):
@@ -102,11 +102,11 @@ def get_xy_dat_wld(f_dat):
         for j in range(date_split_n,date_split_n+ len(factor_quantity_name)):
             x_dummy_quan[i][j] = x_quan[i][j - date_split_n ]
             # fix defect column
-            if x_quan[i][j - date_split_n ] != x_quan[i][j - date_split_n ]:
+            if math.isnan(x_quan[i][j - date_split_n ]) or (x_quan[i][j - date_split_n ] != x_quan[i][j - date_split_n ]):
                 x_dummy_quan[i][j] = biased_value
         # insert quality value
         for j in range(len(factor_quality_name)):
-            if math.isnan(x_qual[i][j]) or (x_qual[i][j]!=x_qual[i][j]):
+            if math.isnan(x_qual[i][j]) or (x_qual[i][j]!=x_qual[i][j]) or x_qual[i][j] < 0:
                 x_dummy_qual[i][j] = biased_value
             else:
                 x_dummy_qual[i][j] = x_qual[i][j]
@@ -161,8 +161,8 @@ def train_nn_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_
     cost = tf.reduce_mean(loss)
     optimizer = tf.train.AdamOptimizer().minimize(cost) #learning_rate = 0.001
     # setting
-    batch_size = 3
-    epochs = 20
+    batch_size = 200
+    epochs = 30
     # deploy!!
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
@@ -176,14 +176,12 @@ def train_nn_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_
                     y_train[mini_batch*n_mini_batch:mini_batch*n_mini_batch+n_mini_batch]
                 _, c = sess.run([optimizer, cost], \
                        feed_dict={input_quan: epoch_x_quan, input_qual: epoch_x_qual, y: epoch_y})
-                print c
                 epoch_loss += c # c is in mini_batch
             print('Epoch',epoch+1,'/',epochs,'loss:',epoch_loss)
         # evaluation process
         correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
         accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
-        print('Accuracy:',accuracy.eval({input_quan: x_quan_test,\
-               input_qual: x_qual_test, y: t_test}))
+        print('Accuracy:',accuracy.eval({input_quan: x_quan_test, input_qual: x_qual_test, y: y_test}))
         #print(sess.run(prediction, feed_dict={x: x_test[20:25]}), y_test[20:25])
 
 def train_nn_model_score(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_test, y_test):

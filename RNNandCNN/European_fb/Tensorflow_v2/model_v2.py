@@ -12,7 +12,7 @@ input_qual = tf.placeholder('int64', [None, n_feature_qual])
 y = tf.placeholder('float', [None, n_classes])
 
 # setting embedding space (league, season, stage, team, player)
-embed_size = 3
+embed_size = 2
 vocab_size_league = 26000 # number league from api
 embed_sp_league = tf.Variable(tf.random_normal([vocab_size_league, embed_size], -1.0, 1.0))
 vocab_size_season = 30 # just reserve year
@@ -67,6 +67,10 @@ def model_RNN_v0(data_quan, data_qual):
     # we only want the last output
     output = tf.matmul(outputs[-1], hd_layer_out['weights']) + hd_layer_out['biases']
     output = tf.nn.softmax(output)
+    return output
+
+def model_CNN_RNN_c0(data_quan, data_qual):
+    
     return output
 
 # ===============
