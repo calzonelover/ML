@@ -1,22 +1,39 @@
 from eufb_TFpackage import *
 
+
 ### get data ###
-#x_train, y_train, x_test, y_test = get_xy_dat_score(f_dat)
-x_train, y_train, x_test, y_test = get_xy_dat_wld(f_dat)
+x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_test, y_test = get_xy_dat_wld(f_dat)
+#x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_test, y_test = get_xy_dat_score(f_dat)
 
-input_length = x_train.shape[1]
-output_length = y_train.shape[1]
+#input_length = x_train.shape[1]
+#output_length = y_train.shape[1]
 
-print(x_train.shape,y_train.shape)
-print(y_train[14204])
+
+print(x_quan_train.shape,x_qual_train.shape,y_train.shape)
+print(x_quan_test.shape,x_qual_test.shape,y_test.shape)
+
+#print(x_qual_train[19234])
+#print(x_quan_train[19234])
 #exit()
-#x = tf.placeholder('float',[None, input_length])
-#y = tf.placeholder('float', [None, output_length])
-#x_train = np.reshape(x_train, [x_train.shape[0],input_length,1])### for lstm
-#x_test = np.reshape(x_test, [x_test.shape[0],input_length,1])### for lstm
+#sess = tf.Session()
+#print(sess.run(tf.slice(x_qual_train,[0,3],[-1,21]))[19234])
+#exit()
 
-train_nn_model_wld(x_train, y_train, x_test, y_test)
+train_nn_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_test, y_test)
 #train_nn_model_score(x_train, y_train, x_test, y_test)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

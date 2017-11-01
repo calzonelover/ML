@@ -7,16 +7,16 @@ import tensorflow as tf
 from tensorflow.python.ops import rnn, rnn_cell
 
 
-
 # ===================
 #  Data preparation
 # ===================
 # data setting
 dat_dir = '/Users/Macintosth/Desktop/FreeTimeProject/Problem/European_football_2008-2016/'
+#dat_dir = '/root/Problems/Eufb_2008_2016/'
 dat_f_name = 'database.sqlite'
 f_dat = dat_dir+dat_f_name
 n_train = 20000
-n_test = 26976 - n_train # total matches = 26976
+n_test = 25976 - n_train # total matches = 26976
 biased_value = 0. # fill defect elements
 date_split_n = 5 #  has hr/weekday/date/month/year
 
@@ -162,7 +162,6 @@ def model_RNN_v0(data):
     output = tf.matmul(outputs[-1], hd_layer_out['weights']) + hd_layer_out['biases']
     output = tf.nn.softmax(output)
     return output
-
 
 # ===============
 #  Model Score
