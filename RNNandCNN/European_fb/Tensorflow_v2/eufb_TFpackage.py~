@@ -12,8 +12,8 @@ from tensorflow.python.ops import rnn, rnn_cell
 #  Data preparation
 # ===================
 # data setting
-#dat_dir = '/home/jab/Freetimeproject/Problems/Eufb_2008_2015'
-#dat_dir = '/home/u5934/Problem/European_football_2008-2016/'
+#dat_dir = '/Users/Macintosth/Desktop/FreeTimeProject/Problem/European_football_2008-2016/'
+#dat_dir = '/root/Problems/Eufb_2008_2016/'
 dat_dir = '/Users/Macintosth/Desktop/FreeTimeProject/Problem/European_football_2008-2016/'
 dat_f_name = 'database.sqlite'
 f_dat = dat_dir+dat_f_name
@@ -155,13 +155,12 @@ from model_v2 import *
 # ==================
 #  Training Process
 # ==================
-learning_rate = 0.0001
 
 def train_nn_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_test, y_test):
-    prediction = model_CNN_RNN_v0(input_quan, input_qual)
+    prediction = model_RNN_v0(input_quan, input_qual)
     loss =  tf.nn.softmax_cross_entropy_with_logits(logits = prediction, labels = y)
     cost = tf.reduce_mean(loss)
-    optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost) #learning_rate = 0.001
+    optimizer = tf.train.AdamOptimizer().minimize(cost) #learning_rate = 0.001
     # setting
     batch_size = 200
     epochs = 10
