@@ -149,7 +149,6 @@ def date_split(date_want):# with pattern '2008-08-17 00:00:00' to hr/weekday/dat
     return np.array([hr_want, weekday_want, dates_want, month_want, year_want])
 
 
-
 # ========================
 # model for Win Lose Draw
 # ========================
@@ -290,7 +289,7 @@ def model_CNN_RNN_v1(data):
     n_hidden = 100
     n_hidden_2 = 100
     n_classes = 3
-    hd_layer_out = {'weights': tf.Variable(tf.random_normal([n_hidden, n_classes])),
+    hd_layer_out = {'weights': tf.Variable(tf.random_normal([n_hidden, n_classes])),\
                     'biases': tf.Variable(tf.random_normal([n_classes]))} ####
     # reshape to [1, n_input]
     x = tf.reshape(data, [-1, 10, n_input/10, 1]) # want to reshape 100 -> 10x10x1

@@ -156,13 +156,13 @@ from model_v2 import *
 # ==================
 
 def train_nn_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_test, y_test):
-    prediction = model_RNN_v0(input_quan, input_qual)
+    prediction = model_CNN_RNN_v0(input_quan, input_qual)
     loss =  tf.nn.softmax_cross_entropy_with_logits(logits = prediction, labels = y)
     cost = tf.reduce_mean(loss)
     optimizer = tf.train.AdamOptimizer().minimize(cost) #learning_rate = 0.001
     # setting
     batch_size = 200
-    epochs = 30
+    epochs = 10
     # deploy!!
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
