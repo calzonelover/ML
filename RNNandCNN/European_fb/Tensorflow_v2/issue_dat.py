@@ -17,11 +17,8 @@ from tensorflow.python.ops import rnn, rnn_cell
 dat_dir = '/Users/Macintosth/Desktop/FreeTimeProject/Problem/European_football_2008-2016/'
 dat_f_name = 'database.sqlite'
 f_dat = dat_dir+dat_f_name
-f_score_name = dat_dir+'score_dat.npz' ###
-f_wld_name = dat_dir+'wld_dat.npz' ###
-n_all = 25976
 n_train = 20000
-n_test = n_all - n_train # total matches = 25976
+n_test = 25976 - n_train # total matches = 25976
 biased_value = 0. # fill defect elements
 date_split_n = 5 #  has hr/weekday/date/month/year
 
@@ -75,10 +72,9 @@ def get_xy_dat_score(f_dat):
     x_dummy_quan.astype(float)
     x_dummy_qual.astype(int)
     y.astype(float)
+    np.savez('score_dat', x_quan = x_dummy_quan, x_qual = x_dummy_qual, y_score = y)
     x_quan_train, x_qual_train, y_train = x_dummy_quan[:n_train],x_dummy_qual[:n_train],y[0:n_train]
-    x_quan_test, x_qual_test, y_test = x_dummy_quan[n_train:matches.shape[0]],\
-                                      x_dummy_qual[n_train:matches.shape[0]], y[n_train:matches.shape[0]]
-    return x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_test, y_test 
+    x_quan_test, x_qual_test, y_test = x_dummy_quan[20000:matches.shape[0]],x_dummy_qual[20000:matches.shape[0]], y[20000:matches.shape[0]]
 def get_xy_dat_wld(f_dat):
     # set
     position_season = date_split_n + len(factor_quantity_name) + 1
@@ -131,10 +127,10 @@ def get_xy_dat_wld(f_dat):
     x_dummy_quan.astype(float)
     x_dummy_qual.astype(int)
     y.astype(float)
+    np.savez('wld_dat', x_quan = x_dummy_quan, x_qual = x_dummy_qual, y_wld = y_wld)
     x_quan_train, x_qual_train, y_train = x_dummy_quan[:n_train],x_dummy_qual[:n_train],y_wld[0:n_train]
-    x_quan_test, x_qual_test, y_test = x_dummy_quan[n_train:matches.shape[0]],\
-                                       x_dummy_qual[n_train:matches.shape[0]], y_wld[n_train:matches.shape[0]]
-    return x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_test, y_test 
+    x_quan_test, x_qual_test, y_test = x_dummy_quan[20000:matches.shape[0]],\
+                                       x_dummy_qual[20000:matches.shape[0]], y_wld[20000:matches.shape[0]]
 def season_to_number(year_season): # Ex (2008/2009 -> 8)
     return float(year_season[3])
 def date_split(date_want):# with pattern '2008-08-17 00:00:00' to hr/weekday/date/month/year
@@ -147,86 +143,39 @@ def date_split(date_want):# with pattern '2008-08-17 00:00:00' to hr/weekday/dat
     weekday_want = datetime(int(year_want), int(month_want), int(dates_want),\
         int(hr_want),int(min_want),int(sec_want)).weekday()
     return np.array([hr_want, weekday_want, dates_want, month_want, year_want])
-def fast_get_xy_dat_score():
-    file = np.load(f_score_name)
-    x_quan, x_qual, y_score = file['x_quan'], file['x_qual'], file['y_score']
-    x_quan_train, x_qual_train, y_train = x_quan[:n_train],x_qual[:n_train],y_score[:n_train]
-    x_quan_test, x_qual_test, y_test = x_quan[n_train:n_all],\
-                                       x_qual[n_train:n_all], y_score[n_train:n_all]
-    return x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_test, y_test
-def fast_get_xy_dat_wld():
-    file = np.load(f_wld_name)
-    x_quan, x_qual, y_wld = file['x_quan'], file['x_qual'], file['y_wld']
-    x_quan_train, x_qual_train, y_train = x_quan[:n_train],x_qual[:n_train],y_wld[:n_train]
-    x_quan_test, x_qual_test, y_test = x_quan[n_train:n_all],\
-                                       x_qual[n_train:n_all], y_wld[n_train:n_all]
-    return x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_test, y_test
 
-# ===============
-#     Model
-# ===============
 
-from model_v2 import *
+get_xy_dat_score(f_dat)
+get_xy_dat_wld(f_dat)
 
 
 
-# ==================
-#  Training Process
-# ==================
-learning_rate = 0.0001
 
-def train_nn_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_test, y_test):
-    prediction = model_CNN_RNN_v0(input_quan, input_qual)
-    loss =  tf.nn.softmax_cross_entropy_with_logits(logits = prediction, labels = y)
-    cost = tf.reduce_mean(loss)
-    optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost) #learning_rate = 0.001
-    # setting
-    batch_size = 200
-    epochs = 3
-    # deploy!!
-    with tf.Session() as sess:
-        sess.run(tf.global_variables_initializer())
-        for epoch in range(epochs):
-            epoch_loss = 0.
-            n_mini_batch = int(len(x_qual_train)/batch_size)
-            for mini_batch in range(n_mini_batch):
-                epoch_x_quan, epoch_x_qual , epoch_y = \
-                    x_quan_train[mini_batch*n_mini_batch:mini_batch*n_mini_batch+n_mini_batch],\
-                    x_qual_train[mini_batch*n_mini_batch:mini_batch*n_mini_batch+n_mini_batch],\
-                    y_train[mini_batch*n_mini_batch:mini_batch*n_mini_batch+n_mini_batch]
-                _, c = sess.run([optimizer, cost], \
-                       feed_dict={input_quan: epoch_x_quan, input_qual: epoch_x_qual, y: epoch_y})
-                epoch_loss += c # c is in mini_batch
-            print('Epoch',epoch+1,'/',epochs,'loss:',epoch_loss)
-        # evaluation process
-        correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
-        accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
-        print('Accuracy:',accuracy.eval({input_quan: x_quan_test, input_qual: x_qual_test, y: y_test}))
-        #print(sess.run(prediction, feed_dict={x: x_test[20:25]}), y_test[20:25])
 
-def train_nn_model_score(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_test, y_test):
-    prediction = model_trivial(x)#model_trivial(x)#model_wld_v1(x)
-    cost = tf.sqrt(tf.reduce_mean(tf.squared_difference(prediction, y)))
-    optimizer = tf.train.AdamOptimizer().minimize(cost)
-    # setting
-    batch_size = 200
-    epochs = 200
-    # deploy!!
-    with tf.Session() as sess:
-        sess.run(tf.global_variables_initializer())
-        for epoch in range(epochs):
-            epoch_loss = 0.
-            n_mini_batch = int(len(x_train)/batch_size)
-            for mini_batch in range(int(len(x_train)/batch_size)):
-                epoch_x, epoch_y = x_train[mini_batch*n_mini_batch:mini_batch*n_mini_batch+n_mini_batch]\
-                    , y_train[mini_batch*n_mini_batch:mini_batch*n_mini_batch+n_mini_batch]
-                _, c = sess.run([optimizer, cost], feed_dict={x: epoch_x, y: epoch_y})
-                epoch_loss += c
-            print('Epoch',epoch+1,'/',epochs,'loss:',epoch_loss)
-        # evaluation process
-        accuracy = tf.sqrt(tf.reduce_mean(tf.squared_difference(prediction, y)))
-        print('RMS:',accuracy.eval({x:x_test, y:y_test}))
-        print(sess.run(prediction, feed_dict={x: x_test[12:20]}), y_test[12:20])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
