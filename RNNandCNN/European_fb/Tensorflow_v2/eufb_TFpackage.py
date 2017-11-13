@@ -1,6 +1,7 @@
 import sqlite3 as lite
 import pandas as pd
 import numpy as np
+import os
 import math
 from datetime import datetime
 
@@ -182,10 +183,22 @@ def train_nn_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost) #learning_rate = 0.001
     # setting
     batch_size = 200
-    epochs = 3
+    epochs = 2
+    num_epochs_print = 10
+    # file log train
+    f_name_acc_rem = os.getcwd()+'/log'+'/logs_train.olo'
+    f_acc_rem = open(f_name_acc_rem, 'w')
+    # declare saver
+    saver = tf.train.Saver()
+    path_saver = os.getcwd()+'/model_repo/model_CNN_RNN_v0.ckpt'
     # deploy!!
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
+        # check if model already exist or nit
+        if os.path.isfile(path_saver+'.meta'):
+            saver.restore(sess, path_saver)
+            print('!!!!   model already exist !!!!')
+        # start first epoch
         for epoch in range(epochs):
             epoch_loss = 0.
             n_mini_batch = int(len(x_qual_train)/batch_size)
@@ -197,13 +210,20 @@ def train_nn_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_
                 _, c = sess.run([optimizer, cost], \
                        feed_dict={input_quan: epoch_x_quan, input_qual: epoch_x_qual, y: epoch_y})
                 epoch_loss += c # c is in mini_batch
-            print('Epoch',epoch+1,'/',epochs,'loss:',epoch_loss)
+            if num_epochs_print <= epoch:
+                print('Epoch',epoch+1,'/',epochs,'loss:',epoch_loss)
+            if epochs % epochs/num_epochs_print == 0:
+                print('Epoch',epoch+1,'/',epochs,'loss:',epoch_loss)
+            f_acc_rem.write('{} {}\n'.format(epoch, epoch_loss))
         # evaluation process
         correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
         accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
         print('Accuracy:',accuracy.eval({input_quan: x_quan_test, input_qual: x_qual_test, y: y_test}))
+        # save variable (Model)
+        saver.save(sess, path_saver)
+    # close file log train
+    f_acc_rem.close()
         #print(sess.run(prediction, feed_dict={x: x_test[20:25]}), y_test[20:25])
-
 def train_nn_model_score(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_test, y_test):
     prediction = model_trivial(x)#model_trivial(x)#model_wld_v1(x)
     cost = tf.sqrt(tf.reduce_mean(tf.squared_difference(prediction, y)))
@@ -227,7 +247,6 @@ def train_nn_model_score(x_quan_train, x_qual_train, y_train, x_quan_test, x_qua
         accuracy = tf.sqrt(tf.reduce_mean(tf.squared_difference(prediction, y)))
         print('RMS:',accuracy.eval({x:x_test, y:y_test}))
         print(sess.run(prediction, feed_dict={x: x_test[12:20]}), y_test[12:20])
-
 
 
 
