@@ -14,8 +14,8 @@ from tensorflow.python.ops import rnn, rnn_cell
 # ===================
 # data setting
 #dat_dir = '/home/jab/Freetimeproject/Problems/Eufb_2008_2015/'
-#dat_dir = '/home/u5934/Problem/European_football_2008-2016/'
-dat_dir = '/Users/Macintosth/Desktop/FreeTimeProject/Problem/European_football_2008-2016/'
+dat_dir = '/home/u5934/Problem/European_football_2008-2016/'
+#dat_dir = '/Users/Macintosth/Desktop/FreeTimeProject/Problem/European_football_2008-2016/'
 dat_f_name = 'database.sqlite'
 f_dat = dat_dir+dat_f_name
 f_score_name = dat_dir+'score_dat.npz' ###
@@ -177,20 +177,20 @@ from model_v2 import *
 learning_rate = 0.0001
 
 def train_nn_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_test, y_test):
-    prediction = model_CNN_RNN_v0(input_quan, input_qual)
+    prediction = model_RNN_v0(input_quan, input_qual) ### need model config
     loss =  tf.nn.softmax_cross_entropy_with_logits(logits = prediction, labels = y)
     cost = tf.reduce_mean(loss)
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost) #learning_rate = 0.001
     # setting
     batch_size = 200
-    epochs = 2
+    epochs = 15000
     num_epochs_print = 10
     # file log train
-    f_name_acc_rem = os.getcwd()+'/log'+'/logs_train.olo'
-    f_acc_rem = open(f_name_acc_rem, 'w')
+    f_name_acc_rem = os.getcwd()+'/log'+'/logs_train_RNN.olo' ### need model configure
+    f_acc_rem = open(f_name_acc_rem, 'a')
     # declare saver
     saver = tf.train.Saver()
-    path_saver = os.getcwd()+'/model_repo/model_CNN_RNN_v0.ckpt'
+    path_saver = os.getcwd()+'/model_repo/model_RNN_v0.ckpt' ### need model configure
     # deploy!!
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
@@ -218,7 +218,8 @@ def train_nn_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_
         # evaluation process
         correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
         accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
-        print('Accuracy:',accuracy.eval({input_quan: x_quan_test, input_qual: x_qual_test, y: y_test}))
+        print('Accuracy on train_set:',accuracy.eval({input_quan: x_quan_train, input_qual: x_qual_train, y: y_train}))
+        print('Accuracy on test_set:',accuracy.eval({input_quan: x_quan_test, input_qual: x_qual_test, y: y_test}))
         # save variable (Model)
         saver.save(sess, path_saver)
     # close file log train
