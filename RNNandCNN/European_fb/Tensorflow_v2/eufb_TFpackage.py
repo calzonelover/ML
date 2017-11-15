@@ -183,7 +183,7 @@ def train_nn_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost) #learning_rate = 0.001
     # setting
     batch_size = 200
-    epochs = 15000
+    epochs = 80
     num_epochs_print = 10
     # file log train
     f_name_acc_rem = os.getcwd()+'/log'+'/logs_train_RNN.olo' ### need model configure
@@ -226,28 +226,51 @@ def train_nn_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_
     f_acc_rem.close()
         #print(sess.run(prediction, feed_dict={x: x_test[20:25]}), y_test[20:25])
 def train_nn_model_score(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_test, y_test):
-    prediction = model_trivial(x)#model_trivial(x)#model_wld_v1(x)
+    prediction = model_RNN_v0_score(input_quan, input_qual) # need model config
     cost = tf.sqrt(tf.reduce_mean(tf.squared_difference(prediction, y)))
     optimizer = tf.train.AdamOptimizer().minimize(cost)
     # setting
     batch_size = 200
-    epochs = 200
+    epochs = 3
+    num_epochs_print = 10
+    # file log train
+    f_name_acc_rem = os.getcwd()+'/log'+'/logs_train_RNN_score.olo' # need model config
+    f_acc_rem = open(f_name_acc_rem, 'a')
+    # declare saver
+    saver = tf.train.Saver()
+    path_saver = os.getcwd()+'/model_repo/model_RNN_v0_score.ckpt' # need model config
     # deploy!!
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
+        # check if model already exist or not
+        if os.path.isfile(path_saver+'.meta'):
+            saver.restore(sess, path_saver)
+            print('!!!! model already exist !!!!')
+        # start first epoch
         for epoch in range(epochs):
             epoch_loss = 0.
-            n_mini_batch = int(len(x_train)/batch_size)
-            for mini_batch in range(int(len(x_train)/batch_size)):
-                epoch_x, epoch_y = x_train[mini_batch*n_mini_batch:mini_batch*n_mini_batch+n_mini_batch]\
-                    , y_train[mini_batch*n_mini_batch:mini_batch*n_mini_batch+n_mini_batch]
-                _, c = sess.run([optimizer, cost], feed_dict={x: epoch_x, y: epoch_y})
-                epoch_loss += c
-            print('Epoch',epoch+1,'/',epochs,'loss:',epoch_loss)
+            n_mini_batch = int(len(x_qual_train)/batch_size)
+            for mini_batch in range(n_mini_batch):
+                epoch_x_quan, epoch_x_qual , epoch_y = \
+                    x_quan_train[mini_batch*n_mini_batch:mini_batch*n_mini_batch+n_mini_batch],\
+                    x_qual_train[mini_batch*n_mini_batch:mini_batch*n_mini_batch+n_mini_batch],\
+                    y_train[mini_batch*n_mini_batch:mini_batch*n_mini_batch+n_mini_batch]
+                _, c = sess.run([optimizer, cost], \
+                            feed_dict={input_quan: epoch_x_quan, input_qual: epoch_x_qual, y: epoch_y})
+                epoch_loss += c # c is mini_batch lost
+            if num_epochs_print <= epoch:
+                print('Epoch',epoch+1,'/',epochs,'loss:',epoch_loss)
+            if epochs % epochs/num_epochs_print == 0:
+                print('Epoch',epoch+1,'/',epochs,'loss:',epoch_loss)
+            f_acc_rem.write('{} {}\n'.format(epoch, epoch_loss))
         # evaluation process
         accuracy = tf.sqrt(tf.reduce_mean(tf.squared_difference(prediction, y)))
-        print('RMS:',accuracy.eval({x:x_test, y:y_test}))
-        print(sess.run(prediction, feed_dict={x: x_test[12:20]}), y_test[12:20])
+        print('RMS on train:',accuracy.eval({input_quan: x_quan_train, input_qual: x_qual_train, y: y_train}))
+        print('RMS on test:',accuracy.eval({input_quan: x_quan_test, input_qual: x_qual_test, y: y_test}))
+        # save variable (Model)
+        saver.save(sess, path_server)
+    # close file log train
+    f_acc_rem.close()
 
 
 

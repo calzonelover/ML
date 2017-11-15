@@ -172,10 +172,11 @@ def model_CNN_v0(data_quan, data_qual):
                              activation=tf.nn.relu)
     # Dense Layer
     flat_dense = tf.contrib.layers.flatten(conv2)
-    dense = tf.layers.dense(inputs=flat_dense, units=1024, activation=tf.nn.relu)
-    dropout = tf.layers.dropout(inputs=dense, rate=0.4)
-    # LSTM layer
-    data = tf.layers.dense(dropout, n_hidden_2)
+    dense_1 = tf.layers.dense(inputs=flat_dense, units=1024, activation=tf.nn.relu)
+    dropout_1 = tf.layers.dropout(inputs=dense_1, rate=0.4)
+    dense_2 = tf.layers.dense(inputs=dropout_1, units=512, activation=tf.nn.relu)
+    dropout_2 = tf.layers.dropout(inputs=dense_2, rate=0.2)
+    data = tf.layers.dense(dropout_2, n_hidden_2)
     data = tf.reshape(data, [-1, n_hidden_2])
     # putput
     output = tf.matmul(data, hd_layer_out['weights']) + hd_layer_out['biases']
