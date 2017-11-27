@@ -31,17 +31,17 @@ embed_sp_player = tf.Variable(tf.random_normal([vocab_size_player, embed_size], 
 def multilayer_v0(data_quan, data_qual):
     n_classes = 3
     size_input_after_embd = 14+(embed_size*27)
-    n_hidden_1 = 512
-    n_hidden_2 = 128
-    n_hidden_3 = 256
+    n_hidden_1 = 2048
+    n_hidden_2 = 256
+    n_hidden_3 = 512
     # weight and biases
     weights = { 'h1': tf.Variable(tf.random_normal([size_input_after_embd, n_hidden_1])),\
                 'h2': tf.Variable(tf.random_normal([n_hidden_1, n_hidden_2])),\
                 'h3': tf.Variable(tf.random_normal([n_hidden_2, n_hidden_3])),\
-                'out': tf.Variable(tf.random_normal([n_hidden_2, n_classes]))}
+                'out': tf.Variable(tf.random_normal([n_hidden_3, n_classes]))}
     biases = {'b1': tf.Variable(tf.random_normal([n_hidden_1])),\
               'b2': tf.Variable(tf.random_normal([n_hidden_2])),\
-              'b3': tf.Variable(tf.random_normal([n_hidden_2])),\
+              'b3': tf.Variable(tf.random_normal([n_hidden_3])),\
               'out': tf.Variable(tf.random_normal([n_classes]))}
     # quantity input
     x_quan = data_quan
@@ -74,7 +74,7 @@ def multilayer_v0(data_quan, data_qual):
     output = tf.nn.softmax(layer_out)
     return output
 def model_RNN_v0(data_quan, data_qual):
-    n_hidden = 100
+    n_hidden = 40
     n_classes = 3
     hd_layer_out = {'weights': tf.Variable(tf.random_normal([n_hidden, n_classes]))
                   ,'biases': tf.Variable(tf.random_normal([n_classes]))}
@@ -105,8 +105,7 @@ def model_RNN_v0(data_quan, data_qual):
     # Generate a n_input-element sequence of inputs
     data = tf.split(data ,14+(embed_size*27) ,1)
     # 2-layer LSTM, each layer has n_hidden units.
-    rnn_cells = rnn_cell.MultiRNNCell([rnn_cell.BasicLSTMCell(n_hidden)\
-                                      ,rnn_cell.BasicLSTMCell(n_hidden)])
+    rnn_cells = rnn_cell.MultiRNNCell([rnn_cell.BasicLSTMCell(n_hidden)])#,rnn_cell.BasicLSTMCell(n_hidden)])
     # generate prediction
     outputs, states = rnn.static_rnn(rnn_cells, data, dtype=tf.float32)
     # we only want the last output
@@ -115,8 +114,8 @@ def model_RNN_v0(data_quan, data_qual):
     return output
 
 def model_CNN_RNN_v0(data_quan, data_qual):
-    n_hidden = 100
-    n_hidden_2 = 100
+    n_hidden = 20
+    n_hidden_2 = 512
     n_classes = 3
     hd_layer_out = {'weights': tf.Variable(tf.random_normal([n_hidden, n_classes]))\
                   ,'biases': tf.Variable(tf.random_normal([n_classes]))}
@@ -151,23 +150,25 @@ def model_CNN_RNN_v0(data_quan, data_qual):
                             kernel_size=[3, 3],
                             padding="same",
                             activation=tf.nn.relu)
-    conv1 = tf.layers.dropout(conv1, 0.4) ####
-    conv2 = tf.layers.conv2d(inputs=conv1,
+    pool1 = tf.layers.max_pooling2d(inputs=conv1, pool_size=[2, 2], strides=2)
+    #conv1 = tf.layers.dropout(conv1, 0.4) ####
+    conv2 = tf.layers.conv2d(inputs=pool1,
                              filters=64,
                              kernel_size=[5, 5],
                              padding="same",
                              activation=tf.nn.relu)
+    pool2 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[2, 2], strides=2)
     # Dense Layer
-    flat_dense = tf.contrib.layers.flatten(conv2)
-    flat_dense = tf.layers.dropout(inputs=flat_dense, rate=0.4) ####
+    flat_dense = tf.contrib.layers.flatten(pool2)
+    #flat_dense = tf.layers.dropout(inputs=flat_dense, rate=0.2) ####
     dense = tf.layers.dense(inputs=flat_dense, units=1024, activation=tf.nn.relu)
-    dropout = tf.layers.dropout(inputs=dense, rate=0.0) ####
+    dropout = tf.layers.dropout(inputs=dense, rate=0.4) ####
     # LSTM layer
     data = tf.layers.dense(dropout, n_hidden_2)
     data = tf.reshape(data, [-1, n_hidden_2])
     data = tf.split(data, n_hidden_2, 1)
     # 2-layer LSTM, each layer has n_hidden units.
-    rnn_cells = rnn_cell.MultiRNNCell([rnn_cell.BasicLSTMCell(n_hidden),rnn_cell.BasicLSTMCell(n_hidden)])
+    rnn_cells = rnn_cell.MultiRNNCell([rnn_cell.BasicLSTMCell(n_hidden)])#,rnn_cell.BasicLSTMCell(n_hidden)])
     # generate prediction
     output, states = rnn.static_rnn(rnn_cells, data, dtype=tf.float32)
     # putput

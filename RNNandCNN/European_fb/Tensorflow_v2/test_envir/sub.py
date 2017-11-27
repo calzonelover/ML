@@ -1,5 +1,9 @@
 import tensorflow as tf
 
-print('be humble bitch sit down')
+a = tf.random_uniform([3,5])
 
-x = tf.placeholder('float', [None])
+sess = tf.Session()
+
+out = sess.run(a)
+print('############ Start ###############')
+print(out)
