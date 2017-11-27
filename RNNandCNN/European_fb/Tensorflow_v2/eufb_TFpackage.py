@@ -176,14 +176,66 @@ from model_v2 import *
 # ==================
 learning_rate = 0.0001
 
-def train_nn_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_test, y_test):
+def train_CNN_RNN_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_test, y_test):
+    prediction = model_CNN_RNN_v0(input_quan, input_qual) ### need model config
+    loss =  tf.nn.softmax_cross_entropy_with_logits(logits = prediction, labels = y)
+    cost = tf.reduce_mean(loss)
+    optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost) #learning_rate = 0.001
+    # setting
+    batch_size = 200
+    epochs = 5
+    num_epochs_print = 10
+    # file log train
+    f_name_acc_rem = os.getcwd()+'/log'+'/logs_train_CNN_RNN.olo' ### need model configure
+    f_acc_rem = open(f_name_acc_rem, 'a')
+    # declare saver
+    saver = tf.train.Saver()
+    path_saver = os.getcwd()+'/model_repo/model_CNN_RNN_v0.ckpt' ### need model configure
+    # deploy!!
+    with tf.Session() as sess:
+        sess.run(tf.global_variables_initializer())
+        # check if model already exist or nit
+        if os.path.isfile(path_saver+'.meta'):
+            saver.restore(sess, path_saver)
+            print('!!!!   model already exist !!!!')
+        # start first epoch
+        for epoch in range(epochs):
+            epoch_loss = 0.
+            n_mini_batch = int(len(x_qual_train)/batch_size)
+            for mini_batch in range(n_mini_batch):
+                epoch_x_quan, epoch_x_qual , epoch_y = \
+                    x_quan_train[mini_batch*n_mini_batch:mini_batch*n_mini_batch+n_mini_batch],\
+                    x_qual_train[mini_batch*n_mini_batch:mini_batch*n_mini_batch+n_mini_batch],\
+                    y_train[mini_batch*n_mini_batch:mini_batch*n_mini_batch+n_mini_batch]
+                _, c = sess.run([optimizer, cost], \
+                       feed_dict={input_quan: epoch_x_quan, input_qual: epoch_x_qual, y: epoch_y})
+                epoch_loss += c # c is in mini_batch
+            if num_epochs_print <= epoch:
+                print('Epoch',epoch+1,'/',epochs,'loss:',epoch_loss)
+            if epochs % epochs/num_epochs_print == 0:
+                print('Epoch',epoch+1,'/',epochs,'loss:',epoch_loss)
+            f_acc_rem.write('{} {}\n'.format(epoch, epoch_loss))
+        # evaluation process
+        correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
+        accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
+        print('Accuracy on train_set:',accuracy.eval({input_quan: x_quan_train, input_qual: x_qual_train, y: y_train}))
+        print('Accuracy on test_set:',accuracy.eval({input_quan: x_quan_test, input_qual: x_qual_test, y: y_test}))
+        ### just try to print for check correction
+        print('Print to compare',prediction.eval({input_quan: x_quan_test[500:505], input_qual: x_qual_test[500:505]}), y_test[500:505])
+        ###
+        # save variable (Model)
+        saver.save(sess, path_saver)
+    # close file log train
+    f_acc_rem.close()
+        #print(sess.run(prediction, feed_dict={x: x_test[20:25]}), y_test[20:25])
+def train_RNN_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_test, y_test):
     prediction = model_RNN_v0(input_quan, input_qual) ### need model config
     loss =  tf.nn.softmax_cross_entropy_with_logits(logits = prediction, labels = y)
     cost = tf.reduce_mean(loss)
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost) #learning_rate = 0.001
     # setting
     batch_size = 200
-    epochs = 80
+    epochs = 1
     num_epochs_print = 10
     # file log train
     f_name_acc_rem = os.getcwd()+'/log'+'/logs_train_RNN.olo' ### need model configure
@@ -220,6 +272,9 @@ def train_nn_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_
         accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
         print('Accuracy on train_set:',accuracy.eval({input_quan: x_quan_train, input_qual: x_qual_train, y: y_train}))
         print('Accuracy on test_set:',accuracy.eval({input_quan: x_quan_test, input_qual: x_qual_test, y: y_test}))
+        ### just try to print for check correction
+        print('Print to compare',prediction.eval({input_quan: x_quan_test[500:505], input_qual: x_qual_test[500:505]}), y_test[500:505])
+        ###
         # save variable (Model)
         saver.save(sess, path_saver)
     # close file log train

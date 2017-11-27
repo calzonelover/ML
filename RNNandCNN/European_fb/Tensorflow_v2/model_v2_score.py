@@ -28,7 +28,7 @@ embed_sp_player = tf.Variable(tf.random_normal([vocab_size_player, embed_size], 
 #  Model Score
 # ===============
 
-def model_RNN_v0(data_quan, data_qual):
+def model_RNN_v0_score(data_quan, data_qual):
     n_hidden = 100
     n_classes = 3
     hd_layer_out = {'weights': tf.Variable(tf.random_normal([n_hidden, n_classes]))
@@ -69,7 +69,7 @@ def model_RNN_v0(data_quan, data_qual):
     output = tf.nn.relu(output)
     return output
 
-def model_CNN_RNN_v0(data_quan, data_qual):
+def model_CNN_RNN_v0_score(data_quan, data_qual):
     n_hidden = 100
     n_hidden_2 = 100
     n_classes = 3
@@ -128,7 +128,7 @@ def model_CNN_RNN_v0(data_quan, data_qual):
     output = tf.nn.relu(output)
     return output
 
-def model_CNN_v0(data_quan, data_qual):
+def model_CNN_v0_score(data_quan, data_qual):
     n_hidden = 100
     n_hidden_2 = 100
     n_classes = 3

@@ -16,8 +16,8 @@ print(x_quan_train.shape,x_qual_train.shape,y_train.shape)
 print(x_quan_test.shape,x_qual_test.shape,y_test.shape)
 
 
-train_nn_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_test, y_test)
-#train_nn_model_score(x_train, y_train, x_test, y_test)
+#train_RNN_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_test, y_test)
+train_CNN_RNN_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_test, y_test)
 
 
 
