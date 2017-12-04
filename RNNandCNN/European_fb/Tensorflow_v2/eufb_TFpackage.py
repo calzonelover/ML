@@ -190,13 +190,13 @@ from model_v2 import *
 # =================================
 learning_rate = 0.001
 
-
 def train_multilayer_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_test, y_test):
     prediction = multilayer_v0(input_quan, input_qual) ### need model config
     # define loss func
     loss =  tf.nn.softmax_cross_entropy_with_logits(logits = prediction, labels = y)
     cost = tf.reduce_mean(loss)
-    optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost) #learning_rate = 0.001
+    optimizer = tf.train.AdamOptimizer(learning_rate=0.001, beta1=0.9, beta2=0.999\
+                                     , epsilon=1e-8).minimize(cost)
     # evaluation
     correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
     accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
@@ -252,13 +252,14 @@ def train_CNN_RNN_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_
     learning_rate = 0.001
     loss =  tf.nn.softmax_cross_entropy_with_logits(logits = prediction, labels = y)
     cost = tf.reduce_mean(loss)
-    optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost) #learning_rate = 0.001
+    optimizer = tf.train.AdamOptimizer(learning_rate=0.001, beta1=0.9, beta2=0.999\
+                                     , epsilon=1e-8).minimize(cost)
     # evaluation
     correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
     accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
     # setting
     batch_size = 200
-    epochs = 46000
+    epochs = 10
     num_epochs_print = 10
     # file log train
     f_name_acc_rem = os.getcwd()+'/log'+'/logs_train_CNN_RNN.olo' ### need model configure
@@ -274,6 +275,7 @@ def train_CNN_RNN_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_
             saver.restore(sess, path_saver)
             print('!!!!   model already exist !!!!')
         # start first epoch
+        print("initial learning_rate=", learning_rate)
         for epoch in range(epochs):
             epoch_loss = 0.
             n_mini_batch = int(n_train/batch_size)
@@ -311,13 +313,14 @@ def train_RNN_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual
     # define loss func
     loss =  tf.nn.softmax_cross_entropy_with_logits(logits = prediction, labels = y)
     cost = tf.reduce_mean(loss)
-    optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost) #learning_rate = 0.001
+    optimizer = tf.train.AdamOptimizer(learning_rate=0.001, beta1=0.9, beta2=0.999\
+                                     , epsilon=1e-8).minimize(cost)
     # evaluation process
     correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
     accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
     # setting
     batch_size = 200
-    epochs = 18000
+    epochs = 10
     num_epochs_print = 10
     # file log train
     f_name_acc_rem = os.getcwd()+'/log'+'/logs_train_RNN.olo' ### need model configure

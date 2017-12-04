@@ -74,7 +74,7 @@ def multilayer_v0(data_quan, data_qual):
     output = tf.nn.softmax(layer_out)
     return output
 def model_RNN_v0(data_quan, data_qual):
-    n_hidden = 40
+    n_hidden = 8
     n_classes = 3
     hd_layer_out = {'weights': tf.Variable(tf.random_normal([n_hidden, n_classes]))
                   ,'biases': tf.Variable(tf.random_normal([n_classes]))}
