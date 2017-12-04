@@ -14,14 +14,14 @@ from tensorflow.python.ops import rnn, rnn_cell
 # ===================
 # data setting
 #dat_dir = '/home/jab/Freetimeproject/Problems/Eufb_2008_2015/'
-#dat_dir = '/Users/Macintosth/Desktop/FreeTimeProject/Problem/European_football_2008-2016/'
-dat_dir = '/home/default/ML/Jab/Problems/European_football_2008-2016/'
+dat_dir = '/Users/Macintosth/Desktop/FreeTimeProject/Problem/European_football_2008-2016/'
+#dat_dir = '/home/default/ML/Jab/Problems/European_football_2008-2016/'
 dat_f_name = 'database.sqlite'
 f_dat = dat_dir+dat_f_name
 f_score_name = dat_dir+'score_dat.npz' ###
 f_wld_name = dat_dir+'wld_dat.npz' ###
 n_all = 25976
-n_train = 24000
+n_train = 25000
 n_test = n_all - n_train # total matches = 25976
 biased_value = 0. # fill defect elements
 date_split_n = 5 #  has hr/weekday/date/month/year
@@ -354,7 +354,7 @@ def train_RNN_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual
             acc_epochs = accuracy.eval({input_quan: x_quan_test, input_qual: x_qual_test, y: y_test})
             f_acc_rem.write('{} {} {}\n'.format(epoch, epoch_loss, acc_epochs))
             # shuffle sequence of datasets ####
-            x_quan_train, x_qual_train, y_train = shuffle_sequence_input(x_quan_train, x_qual_train, y_train) ####
+            #x_quan_train, x_qual_train, y_train = shuffle_sequence_input(x_quan_train, x_qual_train, y_train) ####
             # save for sure
             if epoch % 100 ==0:
                 saver.save(sess, path_saver)
