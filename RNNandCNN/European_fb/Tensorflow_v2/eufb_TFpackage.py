@@ -188,7 +188,7 @@ from model_v2 import *
 # =================================
 #  Training Process Win/Lose/Draw
 # =================================
-learning_rate = 0.00001
+learning_rate = 0.001
 
 
 def train_multilayer_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_test, y_test):
@@ -249,6 +249,7 @@ def train_multilayer_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test,
 def train_CNN_RNN_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual_test, y_test):
     prediction = model_CNN_RNN_v0(input_quan, input_qual) ### need model config
     # define loss func
+    learning_rate = 0.001
     loss =  tf.nn.softmax_cross_entropy_with_logits(logits = prediction, labels = y)
     cost = tf.reduce_mean(loss)
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost) #learning_rate = 0.001
@@ -257,7 +258,7 @@ def train_CNN_RNN_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_
     accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
     # setting
     batch_size = 200
-    epochs = 16000
+    epochs = 46000
     num_epochs_print = 10
     # file log train
     f_name_acc_rem = os.getcwd()+'/log'+'/logs_train_CNN_RNN.olo' ### need model configure
@@ -292,6 +293,9 @@ def train_CNN_RNN_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_
             f_acc_rem.write('{} {} {}\n'.format(epoch, epoch_loss, acc_epochs))
             # shuffle sequence of datasets ####
             x_quan_train, x_qual_train, y_train = shuffle_sequence_input(x_quan_train, x_qual_train, y_train) ####
+            # save for sure
+            if epoch % 100 ==0:
+                saver.save(sess, path_saver)
         print('Accuracy on train_set:',accuracy.eval({input_quan: x_quan_train, input_qual: x_qual_train, y: y_train}))
         print('Accuracy on test_set:',accuracy.eval({input_quan: x_quan_test, input_qual: x_qual_test, y: y_test}))
         ### just try to print for check correction
@@ -348,6 +352,9 @@ def train_RNN_model_wld(x_quan_train, x_qual_train, y_train, x_quan_test, x_qual
             f_acc_rem.write('{} {} {}\n'.format(epoch, epoch_loss, acc_epochs))
             # shuffle sequence of datasets ####
             x_quan_train, x_qual_train, y_train = shuffle_sequence_input(x_quan_train, x_qual_train, y_train) ####
+            # save for sure
+            if epoch % 100 ==0:
+                saver.save(sess, path_saver)
         print('Accuracy on train_set:',accuracy.eval({input_quan: x_quan_train, input_qual: x_qual_train, y: y_train}))
         print('Accuracy on test_set:',accuracy.eval({input_quan: x_quan_test, input_qual: x_qual_test, y: y_test}))
         ### just try to print for check correction
