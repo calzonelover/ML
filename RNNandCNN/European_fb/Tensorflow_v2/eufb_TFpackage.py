@@ -14,8 +14,8 @@ from tensorflow.python.ops import rnn, rnn_cell
 # ===================
 # data setting
 #dat_dir = '/home/jab/Freetimeproject/Problems/Eufb_2008_2015/'
-dat_dir = '/Users/Macintosth/Desktop/FreeTimeProject/Problem/European_football_2008-2016/'
-#dat_dir = '/home/default/ML/Jab/Problems/European_football_2008-2016/'
+#dat_dir = '/Users/Macintosth/Desktop/FreeTimeProject/Problem/European_football_2008-2016/'
+dat_dir = '/home/default/ML/Jab/Problems/European_football_2008-2016/'
 dat_f_name = 'database.sqlite'
 f_dat = dat_dir+dat_f_name
 f_score_name = dat_dir+'score_dat.npz' ###
